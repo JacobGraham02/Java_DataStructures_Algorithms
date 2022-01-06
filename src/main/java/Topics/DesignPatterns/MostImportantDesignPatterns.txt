@@ -1,0 +1,17 @@
+Singleton
+Factory method
+Strategy
+Observer
+Builder
+Adapter
+State
+Decorator
+
+
+
+Important ones:
+    Singleton
+    Observer
+    Adapter
+    Factory method
+    Builder
