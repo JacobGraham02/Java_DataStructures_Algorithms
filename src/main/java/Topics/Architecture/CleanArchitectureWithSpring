@@ -1,0 +1,117 @@
+Architecture goals: Not about making the software work, but instead making the software flexible, dynamic, scalable, and easily maintainable, great performance, etc.
+Software architecture encourages a good UI/UX design, unique forms, secure code, clean and meaningful unit, integration, functional tests.
+
+Architecture goals in reality: Facilitate development -> facilitate deployment -> facilitate maintenance because it is more expensive then initial software building cost ->
+keep software soft; keep the software flexible and easy-to-change: you change something, and other things change automatically to keep compatability ->
+keep frameworks at arm's length -> keep options open to change the software at any point in development project.
+
+Ultimate goal of software architecture is to minimize the lifetime cost of the software.
+Layers are a solid architecture pattern. However, without restrictions are prone to design flaws.
+
+Tight coupling between layers is hard to test. For example, if the service layer is connected to the entity and repository in the persistence layer.
+Business logic built first, then the database and persistence layer built after due to business logic being most important.
+If you push classes to the bottom layer so it can be accessed by upper layers, boundaries between layers are very blurred. This is a sign of bad software architecture.
+If a software layer is communicating with more than one other layer, that layer becomes hard to test because of many dependencies.
+
+A good software architecture pattern is using a circle: wrap the layers around each other.
+SOLID principles:
+Single responsibility principle:
+    A class should have one and only one reason to change; thus this class should only have one job
+    Consider a class that performs a calculation with an area of a shape, and must handle the logic to output the data in a format like JSON.
+    There should be 2 classes: one which handles the calculation of the shape area, and another which handles the logic of outputting the data to another format like JSON.
+    E.g. 2 classes:
+        AreaCalculator - This can act like the database, persistence, and business layer. It handles the storage and and business logic applied to values used in the calculation.
+        AreaCalculatorOutput - This is like the business and presentation layer, as it presents data to the user in a specific format.
+
+Open-closed principle:
+    Objects or entities should be open for extension but closed for modification. The class should be extendable without modifying the class itself.
+
+    Consider a scenario where the user would like the sum of additional shapes like triangles, pentagons, hexagons, etc. If you constantly edited the class to add more if/else blocks,
+    this would violate the open closed principle. You can make this sum function better by giving each class their own function to calculate their own area.
+    If you give each class their own method to calculate a sum, you can calculate the sum of all the areas like so:
+    (PHP):
+       public function sum() {
+            foreach($this->shapes as $shape) {
+                $arrayOfShapeAreaSums = $shape->area();
+            }
+            return array_sum($arrayOfShapeAreaSums);
+       }
+
+    Saying this, how can you ensure the object processed by AreaCalculator's sum() function is a shape or if the shape has a function named area()?
+    You can create an interface named ShapeInterface with a single public function named area(). Then, make each class implement this interface, which will enforce
+    the usage of this method.
+    public interface ShapeInterface() {
+        public function area();
+    }
+    class Circle implements ShapeInterface {}
+    class Square implements ShapeInterface {}
+
+    However, only the compiler will enforce the usage of the interface function. If some code sneaks into the class that tries to calculate the area of some instance of a shape
+    class that does contain the area() method, you can use is_a() function to check if some shape object implements said interface
+    E.g.
+    public function sum() {
+        foreach($this->shapes as $shape) {
+            if (is_a($shape, 'ShapeInterface')) {
+                $area[] = $shape->area();
+                continue;
+            }
+            throw new AreaCalculatorInvalidShapeException();
+        }
+        return array_sum($area);
+    }
+
+Liskov substitution principle:
+    Let q(x) be a property provable about objects of x of type T. Then q(y) should be provable for objects y of type S where S is a subtype of T.
+    q(x) is some provable property within objects of x of type T.
+    q(y) is some provable property within objects of y of type T.
+    Essentially, this principle is saying sub classes which inherit super classes should be able to substitute in for their parent class.
+
+    Consider a new VolumeCalculator class that extends the AreaCalculator class:
+
+    class VolumeCalculator extends AreaCalculator {
+        public function construct($shapes = []) {
+            parent::construct($shapes);
+        }
+        public function sum() {
+            return [$summedData];
+        }
+    }
+
+    Recall the SumCalculatorOutputter:
+
+    class SumCalculatorOutputter {
+        protected $calculator;
+
+        public function __construct(AreaCalculator $calculator) {
+            $this->calculator = $calculator;
+        }
+
+        public function JSON() {
+            $data = array (
+                'sum' => $this->calculator->sum();
+            );
+            return json_encode($data);
+        }
+        public function HTML() {
+            return implode('', array('', 'Sum of the areas of provided shapes: ', $this->calculator->sum(), ''));
+        }
+    }
+
+    If you tried to run an example like this:
+       $areas = new AreaCalculator($shapes);
+       $volumes = new VolumeCalculator($solidShapes);
+
+       $output = new SumCalculatorOutputter($areas);
+       $output2 = new SumCalculatorOutputter($volumes);
+
+    If you call the HTML function on the $output2 object, you will get an E_NOTICE error informing you of array to string conversion.
+    To fix this, in the VolumeCalculator class, return $summedData instead of an array containing $summedData.
+    Then, $summedData can be a float, double, or integer.
+
+    This satisfies the Liskov substitution principle.
+
+
+Interface segregation principle:
+
+
+Dependency inversion principle:
