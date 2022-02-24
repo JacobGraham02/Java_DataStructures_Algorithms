@@ -1,0 +1,35 @@
+Spring boot architecture:
+
+Presentation layer <-> Business layer <-> Persistence layer <-> Database layer
+
+Presentation layer (Controller class):
+    Preform authentication
+    Handle HTTP requests
+    Convert JSON or other data format into objects which the compiler and JVM then use
+    Once the authentication is successfully performed, transport this authentication to the business layer
+
+Business layer (Service class):
+    *** This layer communicates with both of the layers linked to it: the presentation and business layer
+    Performing validation
+    Performing authorization
+    Applying business logic and rules to incoming data from the presentation layer (controller)
+
+Persistence layer:
+    *** This layer communicates only with the business layer. When an object is fetched from the database, it is passed to the business layer for validation.
+    *** The opposite occurs when writing to a database.
+    Containing storage logic
+    Fetching clean objects from the business layer, converting them into database rows, and pushing to database layer; and vice versa
+
+
+Database layer:
+    *** Either a mock or real database which is used by your application.
+    Performs CRUD operations directly on the database.
+
+
+
+
+
+Spring boot workflow:
+    Client makes an HTTP request -> Controller receives HTTP request -> Controller understands the type of request to process, and deals with the logic behind
+processing that request -> Calls the service class (businesss layer) if required to apply business rules and/or logic -> The service class handles business logic
+on data from the database -> Returns a JSP page is there are no errors.
