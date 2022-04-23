@@ -1,0 +1,51 @@
+Single Responsibility Principle:
+Every class should have a single responsibility. There should never be more than one reason for a class to change.
+
+Consider a Board class for a Tic Tac Toe game. The only thing this class should know is the values of its spots. It should be unconcerned with how those spots are manipulated
+per the rules of Tic Tac Toe or how the game is displayed to the user. The BoardShaper class will be concerned with how the spots are manipulated, and the BoardPresenter class
+with be focused on how the board is presented to the user. These classes are also only passed attributes they need.
+
+
+
+Open/Closed Principle:
+Software entities should be open for extension, but closed for modification.
+
+A good example of this is we have a high-level Greeter class that is instantiated with some Personality. We only know the object that is passed into the Greeter class implements the
+Personality interface. From this, we can add new objects like FormalPersonality, CasualPersonality, and IntimatePersonality. Then, we only have to ensure these classes implement
+the Personality interface (which includes a greet() method). By doing this, the Greeter class is now open for extension while closed for modification
+
+
+
+Liskov Substitution Principle:
+Functions that use pointers or references to base classes must be able to use objects that derive from the base class without knowing it.
+
+The key to understanding this principle is thinking about processes that use subclasses, rather than thinking of the subclasses themselves.
+Take a bad example: The class UnitUpgrades falsely claims to accept any Apartment object (an abstract class) and upgrade it. However, when trying to upgrade the Apartment object
+with upgrade(Apartment), the method checks to make sure the Apartment is not a Studio object, so it does not add a bedroom to it by mistake. Because of this, a Studio object
+cannot be substituted in for any Apartment.
+
+
+
+Interface Segregation Principle:
+Clients should not be forced to depend on interfaces they do not use.
+
+The collection of methods defined in an interface increases as one adds more and more functionality of a class to the code (violation of Single Responsibility Principle). Consider a
+bad example: It is good design to have a Bird class implement an interface that outlines the things a bird can do, namely fly(), shedFeathers(), etc. This works for plenty of
+bird species. However, what if we want to implement the interface in a Penguin class? Penguins cannot fly in the air like birds can. Therefore, we must create a new interface for the
+Penguin because fly() will have to throw an exception in the Penguin class. To avoid this, the Penguin should not be forced to implement this interface.
+
+You can instead make interfaces more abstract. It helps support the Single Responsibility Principle (interface responsible for one behavior) and ensures different Birds like
+Penguins and Eagles only implement functionality they were designed for.
+
+
+
+Dependency Inversion Principle:
+High-level modules should not depend on low-level modules. Both should depend on abstractions. Abstractions should not depend on details. Details should depend on abstractions.
+
+The Dependency Inversion Principle is concerned with reusability. The high-level modules or interfaces of an application should only be describing the general flow of behavior.
+This could be considered business logic. Meanwhile, the low-level modules are written in a way to apply their concrete details to the abstraction (The Adapter Pattern is a good
+example of Dependency Inversion Principle).
+Take a bad example: A WeatherTracker class depends on the low-level details of the different notification systems (phone, emailer, etc.). These should instead be depending on some
+abstraction.
+The good example introduces an abstraction - a Notifier interface.
+
